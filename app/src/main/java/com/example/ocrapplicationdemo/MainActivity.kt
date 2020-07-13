@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        startCameraSource()
     }
 
     private fun startCameraSource() {
@@ -101,6 +103,33 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode != requestPermissionID) {
+            Log.d(TAG, "Got unexpected permission result: " + requestCode);
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            try {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.CAMERA
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+                mCameraSource!!.start(surface_view.holder)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
 }
